@@ -30,13 +30,18 @@
         }
 
         #background {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            position: fixed;  /* Use fixed to keep it full screen even on scroll */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
             background-color: lightgray;
             border: 1px solid black;
             perspective: 1000px;
             transition: transform 1s ease-in-out;
+            overflow: hidden;  /* Prevent scrollbars */
         }
 
         #character {
@@ -133,31 +138,41 @@
 
             var rotation = 0;
 
-            // Set background to fill the window
-            background.style.width = window.innerWidth + 'px';
-            background.style.height = window.innerHeight + 'px';
+            // function adjustBackground() {
+            //     // Set background to fill the window
+            //     background.style.width = window.innerWidth + 'px';
+            //     background.style.height = window.innerHeight + 'px';
+            // }
 
-            // Get computed styles of background
-            var backgroundStyle = window.getComputedStyle(background);
-            var backgroundWidth = parseInt(backgroundStyle.width.replace('px', ''));
-            var backgroundHeight = parseInt(backgroundStyle.height.replace('px', ''));
+            function adjustBackground() {
+                // Ensuring the background covers the bigger dimension when rotating
+                var maxDimension = Math.max(window.innerWidth, window.innerHeight);
+                background.style.width = maxDimension * Math.sqrt(2) + 'px'; // sqrt(2) is approx for diagonal length of square
+                background.style.height = maxDimension * Math.sqrt(2) + 'px';
+                background.style.left = (window.innerWidth / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
+                background.style.top = (window.innerHeight / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
+            }
+
+            // Call adjustBackground to set initial size
+            adjustBackground();
 
             // Set initial position
-            character.style.left = (backgroundWidth / 2) + 'px'; // Set character to the middle
+            character.style.left = (window.innerWidth / 2) + 'px'; // Set character to the middle
             character.style.bottom = '150px';
 
             // Set transition property for smooth movement
             character.style.transition = 'left 1s ease-out';
 
+            // Function to handle character movement and background rotation
             function moveCharacter(direction) {
                 var left = parseInt(character.style.left.replace('px', ''));
                 if (direction === 'right') {
                     character.style.transform = 'scaleX(1)';
                     character.style.left = (left + 100) + 'px';
-                    if (left >= (backgroundWidth)) {
+                    if (left >= (window.innerWidth)) {
                         rotation += 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
-                        character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
+                        character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
                     }
 
                     // If the background has rotated 90 degrees, show page-2 and hide page-1
@@ -171,7 +186,7 @@
                     if (left <= 0) {
                         rotation -= 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
-                        character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
+                        character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
 
                         // If the background has rotated back to 0 degrees, show page-1 and hide page-2
                         if (rotation === 0) {
@@ -189,7 +204,11 @@
                     moveCharacter('left');
                 }
             }
+
+            // Adjust background size on window resize
+            window.onresize = adjustBackground;
         }
+
     </script>
 </body>
 
