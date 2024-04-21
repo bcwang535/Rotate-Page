@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #game {
+            position: relative;
+            height: 600px;
+            width: 800px;
+            border: 1px solid black;
+            perspective: 1000px;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        #character {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: red;
+        }
+
+        #character::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 20px solid red;
+            transform: translateY(-50%);
+        }
+
+        #background-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="game">
+        <div id="character"></div>
+        <div id="background-text">Background</div>
+    </div>
+    <script>
+        var character = document.getElementById('character');
+        var game = document.getElementById('game');
+        var rotation = 0;
+    
+        // Set initial position
+        character.style.left = '0px';
+        character.style.bottom = '0px';
+        
+        function moveCharacter() {
+            var left = parseInt(character.style.left.replace('px', ''));
+            switch (rotation % 360) {
+                case 0:
+                    character.style.left = (left + 50) + 'px';
+                    if (left >= 750) {
+                        rotation += 90;
+                        game.style.transform = 'rotate(' + rotation + 'deg)';
+                        character.style.left = '0px';
+                    }
+                    break;
+                case 90:
+                    character.style.left = (left + 50) + 'px';
+                    if (left >= 750) {
+                        rotation += 90;
+                        game.style.transform = 'rotate(' + rotation + 'deg)';
+                        character.style.left = '0px';
+                    }
+                    break;
+                case 180:
+                    character.style.left = (left + 50) + 'px';
+                    if (left >= 750) {
+                        rotation += 90;
+                        game.style.transform = 'rotate(' + rotation + 'deg)';
+                        character.style.left = '0px';
+                    }
+                    break;
+                case 270:
+                    character.style.left = (left + 50) + 'px';
+                    if (left >= 750) {
+                        rotation += 90;
+                        game.style.transform = 'rotate(' + rotation + 'deg)';
+                        character.style.left = '0px';
+                    }
+                    break;
+            }
+        }
+        
+        setInterval(moveCharacter, 100);
+    </script>
+</body>
+
+</html>
