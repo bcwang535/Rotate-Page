@@ -2,6 +2,20 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+        integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+        crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
     <style>
         body,
         html {
@@ -54,11 +68,61 @@
             font-size: 10rem;
             color: #c0c0c0;
         }
+
+        .main-container {
+            margin-top: 200px;
+            position: absolute;
+            z-index: 98;
+            width: 80%;
+            left: 10%;
+            right: 10%;
+        }
     </style>
 </head>
 
 <body>
     <div id="character"></div>
+    <div class="container main-container">
+        <div class="row page-1">
+            <div class="col-md-4 animate__animated animate__fadeInDown">
+                <h1 class="">Topic 1</h1>
+                <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
+                    left and rotate the background.</p>
+            </div>
+
+            <div class="col-md-4 animate__animated animate__fadeInDown animate__delay-1s">
+                <h1 class="">Topic 2</h1>
+                <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
+                    left and rotate the background.</p>
+            </div>
+
+            <div class="col-md-4 animate__animated animate__fadeInDown animate__delay-2s">
+                <h1 class="">Topic 3</h1>
+                <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
+                    left and rotate the background.</p>
+            </div>
+        </div>
+
+        <div class="row page-2" style="display: none;">
+            <div class="col-md-4 animate__animated animate__fadeInDown">
+                <h1 class="">Topic 4</h1>
+                <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
+                    left and rotate the background.</p>
+            </div>
+
+            <div class="col-md-4 animate__animated animate__fadeInDown animate__delay-1s">
+                <h1 class="">Topic 5</h1>
+                <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
+                    left and rotate the background.</p>
+            </div>
+
+            <div class="col-md-4 animate__animated animate__fadeInDown animate__delay-2s">
+                <h1 class="">Topic 6</h1>
+                <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
+                    left and rotate the background.</p>
+            </div>
+        </div>
+    </div>
     <div id="background">
         <div id="background-text">Background</div>
     </div>
@@ -66,25 +130,25 @@
         window.onload = function () {
             var character = document.getElementById('character');
             var background = document.getElementById('background');
-    
+
             var rotation = 0;
-    
+
             // Set background to fill the window
             background.style.width = window.innerWidth + 'px';
             background.style.height = window.innerHeight + 'px';
-    
+
             // Get computed styles of background
             var backgroundStyle = window.getComputedStyle(background);
             var backgroundWidth = parseInt(backgroundStyle.width.replace('px', ''));
             var backgroundHeight = parseInt(backgroundStyle.height.replace('px', ''));
-    
+
             // Set initial position
             character.style.left = (backgroundWidth / 2) + 'px'; // Set character to the middle
             character.style.bottom = '150px';
-    
+
             // Set transition property for smooth movement
             character.style.transition = 'left 1s ease-out';
-    
+
             function moveCharacter(direction) {
                 var left = parseInt(character.style.left.replace('px', ''));
                 if (direction === 'right') {
@@ -95,6 +159,12 @@
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
                     }
+
+                    // If the background has rotated 90 degrees, show page-2 and hide page-1
+                    if (rotation === 90) {
+                        $('.page-1').hide();
+                        $('.page-2').show();
+                    }
                 } else if (direction === 'left') {
                     character.style.transform = 'scaleX(-1)';
                     character.style.left = (left - 100) + 'px';
@@ -102,10 +172,16 @@
                         rotation -= 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
+
+                        // If the background has rotated back to 0 degrees, show page-1 and hide page-2
+                        if (rotation === 0) {
+                            $('.page-2').hide();
+                            $('.page-1').show();
+                        }
                     }
                 }
             }
-    
+
             window.onkeydown = function (event) {
                 if (event.key === 'ArrowRight') {
                     moveCharacter('right');
