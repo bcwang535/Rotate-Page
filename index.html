@@ -3,13 +3,17 @@
 
 <head>
     <style>
-        #game {
+        body {
+            position: relative;
+        }
+
+        #background {
             position: relative;
             height: 600px;
             width: 800px;
             border: 1px solid black;
             perspective: 1000px;
-            transition: transform 0.5s ease-in-out;
+            transition: transform 1s ease-in-out;
         }
 
         #character {
@@ -44,59 +48,61 @@
 </head>
 
 <body>
-    <div id="game">
-        <div id="character"></div>
+    <div id="character"></div>
+    <div id="background">
         <div id="background-text">Background</div>
     </div>
     <script>
-        var character = document.getElementById('character');
-        var game = document.getElementById('game');
-        var rotation = 0;
-    
-        // Set initial position
-        character.style.left = '0px';
-        character.style.bottom = '0px';
-        
-        function moveCharacter() {
-            var left = parseInt(character.style.left.replace('px', ''));
-            switch (rotation % 360) {
-                case 0:
-                    character.style.left = (left + 50) + 'px';
-                    if (left >= 750) {
-                        rotation += 90;
-                        game.style.transform = 'rotate(' + rotation + 'deg)';
-                        character.style.left = '0px';
+        window.onload = function () {
+            var character = document.getElementById('character');
+            var background = document.getElementById('background');
+
+            var rotation = 0;
+
+            // Get computed styles of background
+            var backgroundStyle = window.getComputedStyle(background);
+            var backgroundWidth = parseInt(backgroundStyle.width.replace('px', ''));
+            var backgroundHeight = parseInt(backgroundStyle.height.replace('px', ''));
+            var backgroundMarginLeft = backgroundStyle.marginLeft;
+
+            // Set initial position
+            character.style.left = (backgroundWidth / 2) + 'px'; // Set character to the middle
+            character.style.bottom = '0px';
+
+            // Set transition property for smooth movement
+            character.style.transition = 'left 1s ease-out';
+
+            console.log('background 的 X 值為 ' + backgroundStyle.marginLeft);
+            console.log('background 的寬度為 ' + backgroundStyle.width);
+
+            function moveCharacter() {
+                var left = parseInt(character.style.left.replace('px', ''));
+                character.style.left = (left + 50) + 'px';
+                if (left >= (backgroundWidth)) {
+                    rotation += 90;
+                    background.style.transform = 'rotate(' + rotation + 'deg)';
+                    character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
+                    switch (rotation % 360) {
+                        case 0:
+                            break;
+                        case 180:
+                            break;
+                        case 90:
+                            break;
+                        case 270:
+                            break;
                     }
-                    break;
-                case 90:
-                    character.style.left = (left + 50) + 'px';
-                    if (left >= 750) {
-                        rotation += 90;
-                        game.style.transform = 'rotate(' + rotation + 'deg)';
-                        character.style.left = '0px';
-                    }
-                    break;
-                case 180:
-                    character.style.left = (left + 50) + 'px';
-                    if (left >= 750) {
-                        rotation += 90;
-                        game.style.transform = 'rotate(' + rotation + 'deg)';
-                        character.style.left = '0px';
-                    }
-                    break;
-                case 270:
-                    character.style.left = (left + 50) + 'px';
-                    if (left >= 750) {
-                        rotation += 90;
-                        game.style.transform = 'rotate(' + rotation + 'deg)';
-                        character.style.left = '0px';
-                    }
-                    break;
+                }
+            }
+
+            window.onkeydown = function (event) {
+                if (event.key === 'ArrowRight') {
+                    moveCharacter();
+                }
             }
         }
-        
-        setInterval(moveCharacter, 100);
     </script>
+</body>
 </body>
 
 </html>
