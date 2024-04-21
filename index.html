@@ -3,14 +3,23 @@
 
 <head>
     <style>
-        body {
-            position: relative;
+        body,
+        html {
+            overflow: hidden;
+            background-color: gray;
+        }
+
+        body,
+        #background {
+            margin: 0;
+            padding: 0;
         }
 
         #background {
             position: relative;
-            height: 600px;
-            width: 800px;
+            width: 100%;
+            height: 100%;
+            background-color: lightgray;
             border: 1px solid black;
             perspective: 1000px;
             transition: transform 1s ease-in-out;
@@ -21,6 +30,7 @@
             width: 40px;
             height: 40px;
             background-color: red;
+            z-index: 99;
         }
 
         #character::after {
@@ -41,8 +51,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 50px;
-            opacity: 0.5;
+            font-size: 10rem;
+            color: #c0c0c0;
         }
     </style>
 </head>
@@ -56,53 +66,55 @@
         window.onload = function () {
             var character = document.getElementById('character');
             var background = document.getElementById('background');
-
+    
             var rotation = 0;
-
+    
+            // Set background to fill the window
+            background.style.width = window.innerWidth + 'px';
+            background.style.height = window.innerHeight + 'px';
+    
             // Get computed styles of background
             var backgroundStyle = window.getComputedStyle(background);
             var backgroundWidth = parseInt(backgroundStyle.width.replace('px', ''));
             var backgroundHeight = parseInt(backgroundStyle.height.replace('px', ''));
-            var backgroundMarginLeft = backgroundStyle.marginLeft;
-
+    
             // Set initial position
             character.style.left = (backgroundWidth / 2) + 'px'; // Set character to the middle
-            character.style.bottom = '0px';
-
+            character.style.bottom = '150px';
+    
             // Set transition property for smooth movement
             character.style.transition = 'left 1s ease-out';
-
-            console.log('background 的 X 值為 ' + backgroundStyle.marginLeft);
-            console.log('background 的寬度為 ' + backgroundStyle.width);
-
-            function moveCharacter() {
+    
+            function moveCharacter(direction) {
                 var left = parseInt(character.style.left.replace('px', ''));
-                character.style.left = (left + 50) + 'px';
-                if (left >= (backgroundWidth)) {
-                    rotation += 90;
-                    background.style.transform = 'rotate(' + rotation + 'deg)';
-                    character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
-                    switch (rotation % 360) {
-                        case 0:
-                            break;
-                        case 180:
-                            break;
-                        case 90:
-                            break;
-                        case 270:
-                            break;
+                if (direction === 'right') {
+                    character.style.transform = 'scaleX(1)';
+                    character.style.left = (left + 100) + 'px';
+                    if (left >= (backgroundWidth)) {
+                        rotation += 90;
+                        background.style.transform = 'rotate(' + rotation + 'deg)';
+                        character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
+                    }
+                } else if (direction === 'left') {
+                    character.style.transform = 'scaleX(-1)';
+                    character.style.left = (left - 100) + 'px';
+                    if (left <= 0) {
+                        rotation -= 90;
+                        background.style.transform = 'rotate(' + rotation + 'deg)';
+                        character.style.left = (backgroundWidth / 2) + 'px'; // Move character back to the middle
                     }
                 }
             }
-
+    
             window.onkeydown = function (event) {
                 if (event.key === 'ArrowRight') {
-                    moveCharacter();
+                    moveCharacter('right');
+                } else if (event.key === 'ArrowLeft') {
+                    moveCharacter('left');
                 }
             }
         }
     </script>
-</body>
 </body>
 
 </html>
