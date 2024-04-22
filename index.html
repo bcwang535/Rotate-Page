@@ -43,7 +43,7 @@
             box-sizing: border-box;
             /* Add this line to keep the border inside the element */
             perspective: 1000px;
-            transition: transform 1s ease-in-out;
+            transition: all 1s ease-in-out;
             overflow: hidden;
         }
 
@@ -85,11 +85,44 @@
             left: 10%;
             right: 10%;
         }
+
+        #right-button {
+            position: absolute;
+            z-index: 9999;
+            right: 5vw;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #left-button {
+            position: absolute;
+            z-index: 9999;
+            left: 5vw;
+            top: 50%;
+            transform: translateY(-50%);
+        }
     </style>
 </head>
 
 <body>
     <div id="character"></div>
+
+    <button id="right-button">
+        <!-- Replace this with your SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path d="M13 12l-4-4v8z" />
+        </svg>
+    </button>
+
+    <button id="left-button">
+        <!-- Replace this with your SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M0 0h24v24H0z" fill="none" />
+            <path d="M11 12l4-4v8z"/>
+        </svg>
+    </button>
+
     <div class="container main-container">
         <div class="row page-1">
             <div class="col-md-4 animate__animated animate__fadeInDown">
@@ -138,30 +171,36 @@
         window.onload = function () {
             var character = document.getElementById('character');
             var background = document.getElementById('background');
-
             var rotation = 0;
-
-            // function adjustBackground() {
-            //     // Set background to fill the window
-            //     background.style.width = window.innerWidth + 'px';
-            //     background.style.height = window.innerHeight + 'px';
-            // }
-
-            // function adjustBackground() {
-            //     // Ensuring the background covers the bigger dimension when rotating
-            //     var maxDimension = Math.max(window.innerWidth, window.innerHeight);
-            //     background.style.width = maxDimension * Math.sqrt(2) + 'px'; // sqrt(2) is approx for diagonal length of square
-            //     background.style.height = maxDimension * Math.sqrt(2) + 'px';
-            //     background.style.left = (window.innerWidth / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
-            //     background.style.top = (window.innerHeight / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
-            // }
+            var left = parseInt(character.style.left, 10); // 定義 left 變量
 
             function adjustBackground() {
                 // Calculate the scale factor
                 var maxDimension = Math.max(window.innerWidth, window.innerHeight);
-                var scaleFactor = maxDimension * Math.sqrt(0.25) / Math.min(window.innerWidth, window.innerHeight);
+                var scaleFactor = maxDimension * Math.sqrt(0.15) / Math.min(window.innerWidth, window.innerHeight);
+
                 // Apply the scale transform
                 background.style.transform = 'rotate(' + rotation + 'deg) scale(' + scaleFactor + ')';
+
+                // Adjust the width and height of the background
+                if (rotation % 180 === 0) {
+                    // If the rotation is a multiple of 180 (0, 180, 360, etc.), set the width and height normally
+                    background.style.width = window.innerWidth + 'px';
+                    background.style.height = window.innerHeight + 'px';
+                } else {
+                    // If the rotation is a multiple of 90 but not 180 (90, 270, etc.), swap the width and height
+                    background.style.width = window.innerHeight + 'px';
+                    background.style.height = window.innerWidth + 'px';
+                }
+
+                // Center the background
+                if (rotation % 180 === 0) {
+                    background.style.left = '0px';
+                    background.style.top = '0px';
+                } else {
+                    background.style.left = (window.innerWidth - window.innerHeight) / 2 + 'px';
+                    background.style.top = (window.innerHeight - window.innerWidth) / 2 + 'px';
+                }
 
                 var QWidth = window.innerWidth;
                 var QHeight = window.innerHeight;
@@ -173,7 +212,7 @@
 
             // Set initial position
             character.style.left = (window.innerWidth / 2) + 'px'; // Set character to the middle
-            character.style.bottom = '150px';
+            character.style.bottom = '5vh';
 
             // Set transition property for smooth movement
             character.style.transition = 'left 1s ease-out';
@@ -218,6 +257,19 @@
                 }
             }
 
+            // 滑鼠滾輪行為
+            window.addEventListener('wheel', function(event) {
+                // Scroll down
+                if (event.deltaY > 0) {
+                    moveCharacter('right');
+                }
+                // Scroll up
+                else if (event.deltaY < 0) {
+                    moveCharacter('left');
+                }
+            });
+
+            // 按下鍵盤左右方向鍵
             window.onkeydown = function (event) {
                 if (event.key === 'ArrowRight') {
                     moveCharacter('right');
@@ -225,6 +277,39 @@
                     moveCharacter('left');
                 }
             }
+
+            // 按下向右按鍵
+            document.getElementById('right-button').addEventListener('click', function () {
+                // Set character's left position to exceed the window's width
+                character.style.left = window.innerWidth + 'px';
+
+                // Call moveCharacter
+                moveCharacter('right');
+            });
+
+            // 按下向左按鍵
+            document.getElementById('left-button').addEventListener('click', function () {
+                // Set character's left position to exceed the window's width
+                character.style.left = '0px';
+
+                // Call moveCharacter
+                moveCharacter('left');
+            });
+
+            // 滑鼠滾輪行為
+            // window.addEventListener('wheel', function(event) {
+            //     var left = parseInt(character.style.left.replace('px', ''));
+            //     // Scroll down
+            //     if (event.deltaY > 0) {
+            //         // Increase left position
+            //         character.style.left = (left + 100) + 'px';
+            //     }
+            //     // Scroll up
+            //     else if (event.deltaY < 0) {
+            //         // Decrease left position
+            //         character.style.left = (left - 100) + 'px';
+            //     }
+            // });
 
             // Adjust background size on window resize
             window.onresize = adjustBackground;
