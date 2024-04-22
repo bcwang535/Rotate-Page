@@ -30,7 +30,7 @@
         }
 
         #background {
-            position: fixed;  /* Use fixed to keep it full screen even on scroll */
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -38,10 +38,13 @@
             width: 100vw;
             height: 100vh;
             background-color: lightgray;
-            border: 1px solid black;
+            border: 5px solid red;
+            /* Add this line */
+            box-sizing: border-box;
+            /* Add this line to keep the border inside the element */
             perspective: 1000px;
             transition: transform 1s ease-in-out;
-            overflow: hidden;  /* Prevent scrollbars */
+            overflow: hidden;
         }
 
         #character {
@@ -144,13 +147,25 @@
             //     background.style.height = window.innerHeight + 'px';
             // }
 
+            // function adjustBackground() {
+            //     // Ensuring the background covers the bigger dimension when rotating
+            //     var maxDimension = Math.max(window.innerWidth, window.innerHeight);
+            //     background.style.width = maxDimension * Math.sqrt(2) + 'px'; // sqrt(2) is approx for diagonal length of square
+            //     background.style.height = maxDimension * Math.sqrt(2) + 'px';
+            //     background.style.left = (window.innerWidth / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
+            //     background.style.top = (window.innerHeight / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
+            // }
+
             function adjustBackground() {
-                // Ensuring the background covers the bigger dimension when rotating
+                // Calculate the scale factor
                 var maxDimension = Math.max(window.innerWidth, window.innerHeight);
-                background.style.width = maxDimension * Math.sqrt(2) + 'px'; // sqrt(2) is approx for diagonal length of square
-                background.style.height = maxDimension * Math.sqrt(2) + 'px';
-                background.style.left = (window.innerWidth / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
-                background.style.top = (window.innerHeight / 2 - maxDimension * Math.sqrt(2) / 2) + 'px';
+                var scaleFactor = maxDimension * Math.sqrt(0.25) / Math.min(window.innerWidth, window.innerHeight);
+                // Apply the scale transform
+                background.style.transform = 'rotate(' + rotation + 'deg) scale(' + scaleFactor + ')';
+
+                var QWidth = window.innerWidth;
+                var QHeight = window.innerHeight;
+                console.log("innerWidth" + QWidth, "innerHeight" + QHeight);
             }
 
             // Call adjustBackground to set initial size
@@ -173,6 +188,9 @@
                         rotation += 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
+
+                        // Delay adjusting the background size
+                        setTimeout(adjustBackground, 1000); // Delay by 1 second
                     }
 
                     // If the background has rotated 90 degrees, show page-2 and hide page-1
@@ -187,6 +205,9 @@
                         rotation -= 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
+
+                        // Delay adjusting the background size
+                        setTimeout(adjustBackground, 1000); // Delay by 1 second
 
                         // If the background has rotated back to 0 degrees, show page-1 and hide page-2
                         if (rotation === 0) {
