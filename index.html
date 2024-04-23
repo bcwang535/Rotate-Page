@@ -119,7 +119,7 @@
         <!-- Replace this with your SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
             <path d="M0 0h24v24H0z" fill="none" />
-            <path d="M11 12l4-4v8z"/>
+            <path d="M11 12l4-4v8z" />
         </svg>
     </button>
 
@@ -168,16 +168,25 @@
         <div id="background-text">Background</div>
     </div>
     <script>
-        window.onload = function () {
+        // 使用 DOMContentLoaded ( HTML 文檔解析完成後立即執行程式 )
+        // 而取消 window.onload ( 圖像樣式表和其他資源都已經載入後才執行 )
+        // 使物件一開始即在正確位置
+        document.addEventListener('DOMContentLoaded', function () {
             var character = document.getElementById('character');
             var background = document.getElementById('background');
             var rotation = 0;
-            var left = parseInt(character.style.left, 10); // 定義 left 變量
+            var characterLeft = parseInt(character.style.left, 10); // 定義 characterLeft 變量
 
+            console.log('window.innerWidth: '+window.innerWidth, 'window.innerHeight: '+window.innerHeight);
+
+            // 背景尺寸調整邏輯
             function adjustBackground() {
-                // Calculate the scale factor
-                var maxDimension = Math.max(window.innerWidth, window.innerHeight);
-                var scaleFactor = maxDimension * Math.sqrt(0.15) / Math.min(window.innerWidth, window.innerHeight);
+                var maxDimension = Math.max(window.innerWidth, window.innerHeight); // 找出視窗的寬度和高度中的最大值，如果寬度 1920，高度 993，那麼 maxDimension 將會是 1920。
+                
+                var scaleFactor = maxDimension * Math.sqrt(0.25) / Math.min(window.innerWidth, window.innerHeight); // 計算比例因子。這裡先將最大維度（maxDimension）乘以 Math.sqrt(0.25)（這是 0.5 的平方根），然後再除以視窗的寬度和高度中的最小值。在你的例子中，scaleFactor 將會是 1920 * 0.5 / 993，大約等於 0.968。
+                
+                
+                // var scaleFactor = 1; // 直接設定比例因子為 1，保持與螢幕一致的比例。  
 
                 // Apply the scale transform
                 background.style.transform = 'rotate(' + rotation + 'deg) scale(' + scaleFactor + ')';
@@ -202,9 +211,9 @@
                     background.style.top = (window.innerHeight - window.innerWidth) / 2 + 'px';
                 }
 
-                var QWidth = window.innerWidth;
-                var QHeight = window.innerHeight;
-                console.log("innerWidth" + QWidth, "innerHeight" + QHeight);
+                var adjustBackgroundWidth = window.innerWidth;
+                var adjustBackgroundHeight = window.innerHeight;
+                console.log("adjustBackgroundWidth: " + adjustBackgroundWidth, "adjustBackgroundHeight: " + adjustBackgroundHeight);
             }
 
             // Call adjustBackground to set initial size
@@ -215,15 +224,17 @@
             character.style.bottom = '5vh';
 
             // Set transition property for smooth movement
-            character.style.transition = 'left 1s ease-out';
+            character.style.transition = 'left 500ms ease-out';
 
-            // Function to handle character movement and background rotation
+            // 角色控制與背景旋轉邏輯
             function moveCharacter(direction) {
-                var left = parseInt(character.style.left.replace('px', ''));
+                var characterLeft = parseInt(character.style.left.replace('px', ''));
+
+                // 判斷角色的方向與觸發背景翻轉機制
                 if (direction === 'right') {
                     character.style.transform = 'scaleX(1)';
-                    character.style.left = (left + 100) + 'px';
-                    if (left >= (window.innerWidth)) {
+                    character.style.left = (characterLeft + 100) + 'px';
+                    if (characterLeft >= (window.innerWidth)) {
                         rotation += 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
@@ -239,8 +250,8 @@
                     }
                 } else if (direction === 'left') {
                     character.style.transform = 'scaleX(-1)';
-                    character.style.left = (left - 100) + 'px';
-                    if (left <= 0) {
+                    character.style.left = (characterLeft - 100) + 'px';
+                    if (characterLeft <= 0) {
                         rotation -= 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
@@ -258,7 +269,7 @@
             }
 
             // 滑鼠滾輪行為
-            window.addEventListener('wheel', function(event) {
+            window.addEventListener('wheel', function (event) {
                 // Scroll down
                 if (event.deltaY > 0) {
                     moveCharacter('right');
@@ -296,25 +307,9 @@
                 moveCharacter('left');
             });
 
-            // 滑鼠滾輪行為
-            // window.addEventListener('wheel', function(event) {
-            //     var left = parseInt(character.style.left.replace('px', ''));
-            //     // Scroll down
-            //     if (event.deltaY > 0) {
-            //         // Increase left position
-            //         character.style.left = (left + 100) + 'px';
-            //     }
-            //     // Scroll up
-            //     else if (event.deltaY < 0) {
-            //         // Decrease left position
-            //         character.style.left = (left - 100) + 'px';
-            //     }
-            // });
-
             // Adjust background size on window resize
             window.onresize = adjustBackground;
-        }
-
+        });
     </script>
 </body>
 
