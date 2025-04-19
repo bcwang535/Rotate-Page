@@ -79,11 +79,16 @@
 
         .main-container {
             margin-top: 200px;
-            position: absolute;
+            position: relative;
             z-index: 98;
-            width: 80%;
+            border: solid 1px #000;
+            /* width: 80%;
             left: 10%;
-            right: 10%;
+            right: 10%; */
+        }
+
+        .topic {
+            border: solid 1px #000;
         }
 
         #right-button {
@@ -125,19 +130,19 @@
 
     <div class="container main-container">
         <div class="row page-1">
-            <div class="col-md-4 animate__animated animate__fadeInDown">
+            <div class="col-md-4 topic animate__animated animate__fadeInDown">
                 <h1 class="">Topic 1</h1>
                 <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
                     left and rotate the background.</p>
             </div>
 
-            <div class="col-md-4 animate__animated animate__fadeInDown animate__delay-1s">
+            <div class="col-md-4 topic animate__animated animate__fadeInDown animate__delay-1s">
                 <h1 class="">Topic 2</h1>
                 <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
                     left and rotate the background.</p>
             </div>
 
-            <div class="col-md-4 animate__animated animate__fadeInDown animate__delay-2s">
+            <div class="col-md-4 topic animate__animated animate__fadeInDown animate__delay-2s">
                 <h1 class="">Topic 3</h1>
                 <p>Press the right arrow key to move right and rotate the background. Press the left arrow key to move
                     left and rotate the background.</p>
@@ -173,11 +178,11 @@
         // 使物件一開始即在正確位置
         document.addEventListener('DOMContentLoaded', function () {
             var character = document.getElementById('character');
+            var characterLeft = parseInt(character.style.left, 10); // 取得角色的 left 值，並轉為十進制數值
             var background = document.getElementById('background');
             var rotation = 0;
-            var characterLeft = parseInt(character.style.left, 10); // 定義 characterLeft 變量
 
-            console.log('window.innerWidth: '+window.innerWidth, 'window.innerHeight: '+window.innerHeight);
+            console.log('window.innerWidth: '+ window.innerWidth, 'window.innerHeight: '+ window.innerHeight);
 
             // 背景尺寸調整邏輯
             function adjustBackground() {
@@ -222,6 +227,7 @@
             // Set initial position
             character.style.left = (window.innerWidth / 2) + 'px'; // Set character to the middle
             character.style.bottom = '5vh';
+            console.log('characterInitialLeft: '+ character.style.left);
 
             // Set transition property for smooth movement
             character.style.transition = 'left 500ms ease-out';
@@ -229,12 +235,19 @@
             // 角色控制與背景旋轉邏輯
             function moveCharacter(direction) {
                 var characterLeft = parseInt(character.style.left.replace('px', ''));
+                console.log('Character left value: ', characterLeft); // Log the left value of the character
+                var mainContainer = document.querySelector('.main-container');
+                var mainContainerWidth = mainContainer.offsetWidth;
+                var mainContainerLeft = mainContainer.getBoundingClientRect().left;
+                var mainContainerRight = mainContainer.getBoundingClientRect().right;
 
                 // 判斷角色的方向與觸發背景翻轉機制
                 if (direction === 'right') {
                     character.style.transform = 'scaleX(1)';
                     character.style.left = (characterLeft + 100) + 'px';
-                    if (characterLeft >= (window.innerWidth)) {
+
+                    // 如果角色位置超過 mainContainer 右邊界
+                    if (characterLeft >= mainContainerRight) {
                         rotation += 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
@@ -251,7 +264,9 @@
                 } else if (direction === 'left') {
                     character.style.transform = 'scaleX(-1)';
                     character.style.left = (characterLeft - 100) + 'px';
-                    if (characterLeft <= 0) {
+
+                    // 如果角色位置超過 mainContainer 左邊界
+                    if (characterLeft <= mainContainerLeft) {
                         rotation -= 90;
                         background.style.transform = 'rotate(' + rotation + 'deg)';
                         character.style.left = (window.innerWidth / 2) + 'px'; // Move character back to the middle
@@ -307,8 +322,28 @@
                 moveCharacter('left');
             });
 
-            // Adjust background size on window resize
-            window.onresize = adjustBackground;
+            // 視窗尺寸變化時邏輯
+            window.addEventListener('resize', function() {
+                var mainContainer = document.querySelector('.main-container');
+                var mainContainerWidth = mainContainer.offsetWidth;
+                var characterLeft = parseInt(character.style.left.replace('px', ''));
+                var oldWindowWidth = window.innerWidth; // 儲存舊的視窗寬度
+
+                // 視窗尺寸變化後，重新計算並設定角色的位置
+                window.onresize = function() {
+                    var newWindowWidth = window.innerWidth; // 獲取新的視窗寬度
+                    var newCharacterLeft = (characterLeft / oldWindowWidth) * newWindowWidth; // 根據角色原本的位置比例，重新計算角色的位置
+
+                    // 如果新的角色位置超出了 mainContainer 的寬度，將角色位置設為 mainContainer 的寬度
+                    if (newCharacterLeft > mainContainerWidth) {
+                        newCharacterLeft = mainContainerWidth;
+                    }
+
+                    character.style.left = newCharacterLeft + 'px'; // 設定新的角色位置
+
+                    adjustBackground(); // Adjust background size on window resize
+                };
+            });
         });
     </script>
 </body>
